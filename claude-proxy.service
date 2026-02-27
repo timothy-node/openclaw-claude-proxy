@@ -1,0 +1,17 @@
+[Unit]
+Description=Claude Code CLI Local Proxy
+After=network.target
+
+[Service]
+Type=simple
+User=%i
+WorkingDirectory=%h/.openclaw/workspace/claude-proxy
+ExecStart=%h/.local/bin/uv run python proxy.py
+Restart=on-failure
+RestartSec=5
+Environment=PATH=/home/%i/.local/bin:/usr/local/bin:/usr/bin:/bin
+# 如果 API key 沒有透過其他方式注入，在這裡設定：
+# Environment=ANTHROPIC_API_KEY=sk-ant-...
+
+[Install]
+WantedBy=default.target
