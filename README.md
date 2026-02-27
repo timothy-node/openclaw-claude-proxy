@@ -26,16 +26,26 @@
 # 1. 安裝 uv（如果還沒有）
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# 2. 安裝 Node.js（claude CLI 需要）
-# 已有就跳過
+# 2. 設定 token
+cd ~/.openclaw/extensions/claude-proxy
+cp .env.example .env
+# 編輯 .env，填入你的 CLAUDE_SETUP_TOKEN
+nano .env
 
-# 3. 確認 ANTHROPIC_API_KEY 在環境中
-export ANTHROPIC_API_KEY=sk-ant-...
-
-# 4. 啟動 proxy
-cd ~/.openclaw/workspace/claude-proxy
+# 3. 啟動
 ./start.sh
 ```
+
+## .env 設定
+
+```
+# ~/.openclaw/extensions/claude-proxy/.env
+CLAUDE_SETUP_TOKEN=sk-ant-...
+```
+
+`CLAUDE_SETUP_TOKEN` 會自動被 proxy 轉成 claude CLI 需要的 `ANTHROPIC_API_KEY`。
+
+> ⚠️ `.env` 已加入 `.gitignore`，不會被 commit。
 
 ## 測試
 
@@ -53,7 +63,6 @@ python client.py "剛才我說什麼？" my-session
 ## systemd 自動啟動（選用）
 
 ```bash
-# 安裝 service
 cp claude-proxy.service ~/.config/systemd/user/
 systemctl --user daemon-reload
 systemctl --user enable --now claude-proxy
@@ -86,14 +95,8 @@ journalctl --user -u claude-proxy -f
 每個 `session_id` 對應一個獨立的 `claude` CLI process（跑在 PTY 裡）。
 同一個 session 保有完整的對話歷史，和直接在終端機用 claude 一樣。
 
-建議的 session_id 命名：
+建議命名：
 - Telegram DM：`telegram:<chat_id>`
 - Discord 頻道：`discord:<channel_id>`
 
 閒置超過 1 小時自動關閉（可在 `proxy.py` 調整）。
-
-## 注意事項
-
-- claude CLI 的工作目錄預設是啟動 proxy 時的目錄
-- 若要讓 claude 操作特定專案，可在 `/chat` 前先發 `cd /path/to/project` 訊息
-- PTY 的 prompt 偵測靠啟發式方法，若回應被截斷可調高 `timeout`

@@ -20,7 +20,18 @@ import sys
 import time
 import logging
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Optional
+
+from dotenv import load_dotenv
+
+# 載入 .env（從 proxy.py 所在目錄）
+load_dotenv(Path(__file__).parent / ".env")
+
+# CLAUDE_SETUP_TOKEN → 轉給 claude CLI 用的 ANTHROPIC_API_KEY
+_token = os.getenv("CLAUDE_SETUP_TOKEN")
+if _token:
+    os.environ["ANTHROPIC_API_KEY"] = _token
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
