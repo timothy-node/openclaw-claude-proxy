@@ -34,6 +34,7 @@ if _token:
     os.environ["ANTHROPIC_API_KEY"] = _token
 
 import uvicorn
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -267,8 +268,19 @@ class SessionManager:
 # FastAPI
 # ──────────────────────────────────────────────
 
-app = FastAPI(title="claude-proxy", version="1.0.0")
 manager = SessionManager()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    manager.set_loop(asyncio.get_event_loop())
+    async def idle_cleaner():
+        while True:
+            await asyncio.sleep(300)
+            await manager.cleanup_idle()
+    asyncio.create_task(idle_cleaner())
+    yield
+
+app = FastAPI(title="claude-proxy", version="1.0.0", lifespan=lifespan)
 
 
 class ChatRequest(BaseModel):
@@ -281,16 +293,7 @@ class SessionRequest(BaseModel):
     session_id: str
 
 
-@app.on_event("startup")
-async def startup():
-    manager.set_loop(asyncio.get_event_loop())
 
-    async def idle_cleaner():
-        while True:
-            await asyncio.sleep(300)
-            await manager.cleanup_idle()
-
-    asyncio.create_task(idle_cleaner())
 
 
 @app.get("/health")

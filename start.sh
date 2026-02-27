@@ -17,4 +17,9 @@ if [ ! -f "$SCRIPT_DIR/.env" ]; then
 fi
 
 echo "🚀 Starting claude-proxy on 127.0.0.1:8765 ..."
-exec uv run python proxy.py
+exec uv run --no-project \
+  --with fastapi \
+  --with "uvicorn[standard]" \
+  --with pydantic \
+  --with python-dotenv \
+  python proxy.py
