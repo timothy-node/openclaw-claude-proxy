@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-claude-proxy client — 快速測試用
-用法：python client.py "你好，請介紹你自己" [session_id]
+claude-proxy client — quick test utility
+Usage: python client.py "hello" [session_id]
 """
 import sys
 import json
@@ -29,7 +29,11 @@ def chat(message: str, session_id: str = "cli-test") -> str:
             data = json.loads(resp.read())
             return data.get("response", "(no response)")
     except urllib.error.URLError as e:
-        return f"❌ 無法連線到 proxy：{e}\n請確認 proxy 已啟動：\n  cd ~/.openclaw/workspace/claude-proxy && uv run python proxy.py"
+        return (
+            f"❌ Cannot connect to proxy: {e}\n"
+            f"Make sure the proxy is running:\n"
+            f"  cd ~/.openclaw/skills/claude-proxy && ./start.sh"
+        )
 
 
 def health():
@@ -42,13 +46,13 @@ def health():
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("用法: python client.py <message> [session_id]")
-        print(f"Proxy 狀態: {health()}")
+        print("Usage: python client.py <message> [session_id]")
+        print(f"Proxy status: {health()}")
         sys.exit(1)
 
     msg = sys.argv[1]
     sid = sys.argv[2] if len(sys.argv) > 2 else "cli-test"
 
-    print(f"→ 發送到 session [{sid}]: {msg!r}")
+    print(f"→ Sending to session [{sid}]: {msg!r}")
     resp = chat(msg, sid)
-    print(f"← 回應:\n{resp}")
+    print(f"← Response:\n{resp}")
