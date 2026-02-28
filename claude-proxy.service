@@ -4,14 +4,17 @@ After=network.target
 
 [Service]
 Type=simple
-User=%i
-WorkingDirectory=%h/.openclaw/workspace/claude-proxy
-ExecStart=%h/.local/bin/uv run python proxy.py
+WorkingDirectory=%h/.openclaw/skills/claude-proxy
+ExecStart=%h/.local/bin/uv run --no-project \
+  --with fastapi \
+  --with "uvicorn[standard]" \
+  --with pydantic \
+  --with python-dotenv \
+  python proxy.py
 Restart=on-failure
 RestartSec=5
-Environment=PATH=/home/%i/.local/bin:/usr/local/bin:/usr/bin:/bin
-# 如果 API key 沒有透過其他方式注入，在這裡設定：
-# Environment=ANTHROPIC_API_KEY=sk-ant-...
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+EnvironmentFile=%h/.openclaw/skills/claude-proxy/.env
 
 [Install]
 WantedBy=default.target

@@ -1,102 +1,75 @@
 # claude-proxy
 
-**本地 PTY Proxy：Telegram/Discord → OpenClaw → Claude Code CLI**
-
-沒有第三方伺服器。訊息走 Telegram/Discord 進來，OpenClaw 接收，
-透過 HTTP localhost 轉給本機的 `claude` CLI（跑在 PTY 裡），
-拿到回應後再送回給你。
+Forwards messages from OpenClaw to the local `claude` CLI (`--print` mode) via HTTP.
 
 ```
-你 (Telegram/Discord)
-        ↕
-   OpenClaw Agent
-        ↕  HTTP localhost:8765
-  claude-proxy (proxy.py)
-        ↕  PTY (偽終端)
-   claude CLI
-   ├── tool use ✓
-   ├── file editing ✓
-   ├── git 整合 ✓
-   └── 完整對話記憶 ✓
+OpenClaw Agent
+├─ proxy not running → respond directly via model
+└─ proxy running → POST localhost:8765 → claude CLI → response
 ```
 
-## 安裝
+## Installation
 
 ```bash
-# 1. 安裝 uv（如果還沒有）
+# Clone the repository
+git clone https://github.com/timothy-node/openclaw-claude-proxy.git ~/.openclaw/skills/claude-proxy
+```
+
+```bash
+# 1. Install uv
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# 2. 設定 token
-cd ~/.openclaw/extensions/claude-proxy
+# 2. Install claude CLI
+npm install -g @anthropic-ai/claude-code --prefix ~/.local
+
+# 3. Configure token
+cd ~/.openclaw/skills/claude-proxy
 cp .env.example .env
-# 編輯 .env，填入你的 CLAUDE_SETUP_TOKEN
-nano .env
+nano .env  # set CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat...
 
-# 3. 啟動
+# 4. Start
+cd ~/.openclaw/skills/claude-proxy
 ./start.sh
+
+# 5. Stop
+cd ~/.openclaw/skills/claude-proxy
+./stop.sh
 ```
 
-## .env 設定
+## .env
 
 ```
-# ~/.openclaw/extensions/claude-proxy/.env
-CLAUDE_SETUP_TOKEN=sk-ant-...
+CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat...
 ```
 
-`CLAUDE_SETUP_TOKEN` 會自動被 proxy 轉成 claude CLI 需要的 `ANTHROPIC_API_KEY`。
-
-> ⚠️ `.env` 已加入 `.gitignore`，不會被 commit。
-
-## 測試
-
-```bash
-# 健康檢查
-curl http://127.0.0.1:8765/health
-
-# 發送訊息
-python client.py "你好，幫我列出當前目錄的檔案"
-
-# 指定 session（同 session 保有對話記憶）
-python client.py "剛才我說什麼？" my-session
-```
-
-## systemd 自動啟動（選用）
-
-```bash
-cp claude-proxy.service ~/.config/systemd/user/
-systemctl --user daemon-reload
-systemctl --user enable --now claude-proxy
-
-# 查看 log
-journalctl --user -u claude-proxy -f
-```
+> `.env` is listed in `.gitignore` and will not be committed.
 
 ## HTTP API
 
-| 方法 | 路徑 | 說明 |
-|------|------|------|
-| POST | `/chat` | 發送訊息，取得回應 |
-| GET | `/sessions` | 列出現有 session |
-| DELETE | `/session` | 關閉指定 session |
-| GET | `/health` | 健康檢查 |
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/chat` | Send a message and get a response |
+| GET | `/health` | Health check |
 
 ### POST /chat
 
 ```json
 {
-  "session_id": "telegram:123456789",
-  "message": "幫我寫一個 hello world",
+  "message": "hello",
   "timeout": 120
 }
 ```
 
-## Session 設計
+Response:
+```json
+{ "session_id": "...", "response": "..." }
+```
 
-每個 `session_id` 對應一個獨立的 `claude` CLI process（跑在 PTY 裡）。
-同一個 session 保有完整的對話歷史，和直接在終端機用 claude 一樣。
+## systemd Auto-start (optional)
 
-建議命名：
-- Telegram DM：`telegram:<chat_id>`
-- Discord 頻道：`discord:<channel_id>`
-
-閒置超過 1 小時自動關閉（可在 `proxy.py` 調整）。
+```bash
+cd ~/.openclaw/skills/claude-proxy
+cp claude-proxy.service ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now claude-proxy
+```

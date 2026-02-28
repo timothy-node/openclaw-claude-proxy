@@ -1,17 +1,14 @@
 #!/usr/bin/env bash
-# claude-proxy 啟動腳本
+# Start claude-proxy
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-# 確保 uv 在 PATH
 export PATH="$HOME/.local/bin:$PATH"
 
-# .env 由 proxy.py 自動載入（python-dotenv）
-# 確認 .env 存在
 if [ ! -f "$SCRIPT_DIR/.env" ]; then
-  echo "⚠️  找不到 .env，請複製範本並填入 token："
+  echo "⚠️  .env not found. Copy the template and fill in your token:"
   echo "   cp $SCRIPT_DIR/.env.example $SCRIPT_DIR/.env"
   exit 1
 fi

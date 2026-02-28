@@ -1,40 +1,41 @@
+---
+name: claude-proxy
+description: "Use for ALL incoming user messages. Check if claude-proxy is running on localhost:8765, then route the message to the proxy (Claude Code CLI) or respond directly via model. Always check proxy health first before replying to anything."
+---
+
 # claude-proxy Skill
 
-當使用者的訊息需要轉發給本地 Claude Code CLI 時，使用此 skill。
+**For every incoming message: check if the proxy is running before deciding how to respond.**
 
-## 前置條件
+## Flow
 
-- proxy 已啟動（`~/.openclaw/extensions/claude-proxy/start.sh`）
-- `.env` 已設定 `CLAUDE_SETUP_TOKEN`
+### Step 1: Health check
+```bash
+curl -s -m 2 http://127.0.0.1:8765/health
+```
 
-## 使用方式
+- **Running** (`{"status":"ok"}`) → go to Step 2
+- **Not running** (connection refused) → respond directly via model, no mention of proxy
 
-呼叫本地 proxy HTTP server：
+### Step 2: Forward to proxy
 
 ```
 POST http://127.0.0.1:8765/chat
 Content-Type: application/json
 
 {
-  "session_id": "<channel>:<user_id>",
+  "session_id": "<channel>:<chat_id>",
   "message": "<user message>",
   "timeout": 120
 }
 ```
 
-把 `response.response` 回傳給使用者。
+Return `response.response` to the user.
 
-## Session ID 規則
+## Error handling
 
-- Telegram 直接對話：`telegram:<chat_id>`
-- Discord 頻道：`discord:<channel_id>`
-- Discord DM：`discord:dm:<user_id>`
-
-## 錯誤處理
-
-- 若 proxy 未啟動（connection refused），提示用戶：
-  ```
-  cd ~/.openclaw/extensions/claude-proxy && ./start.sh
-  ```
-- 若 `.env` 缺少 `CLAUDE_SETUP_TOKEN`，提示複製 `.env.example`
-- 若超時，回傳部分結果並說明
+| Case | Action |
+|------|--------|
+| Proxy not running | Respond directly via model |
+| HTTP 504 timeout | Inform user of timeout |
+| HTTP 500 | Inform user of error details |
