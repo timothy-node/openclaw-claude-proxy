@@ -75,3 +75,9 @@ cp claude-proxy.service ~/.config/systemd/user/
 systemctl --user daemon-reload
 systemctl --user enable --now claude-proxy
 ```
+
+### Disable systemd Auto-start (optional)
+
+```bash
+systemctl --user disable --now claude-proxy
+```
