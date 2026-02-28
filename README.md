@@ -32,11 +32,11 @@ cd ~/.openclaw/skills/claude-proxy
 cp .env.example .env
 # edit .env  # set CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat...
 
-# 4. Start
+# 5. Start
 cd ~/.openclaw/skills/claude-proxy
 ./start.sh
 
-# 5. Stop
+# 6. Stop
 cd ~/.openclaw/skills/claude-proxy
 ./stop.sh
 ```
