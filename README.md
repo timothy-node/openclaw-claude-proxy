@@ -13,21 +13,24 @@ OpenClaw Agent
 ## Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/timothy-node/openclaw-claude-proxy.git ~/.openclaw/skills/claude-proxy
+# Vibe Coding
+Install https://github.com/timothy-node/openclaw-claude-proxy
 ```
 
 ```bash
-# 1. Install uv
+# 1. Clone the repository
+git clone https://github.com/timothy-node/openclaw-claude-proxy.git ~/.openclaw/skills/claude-proxy
+
+# 2. Install uv
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# 2. Install claude CLI
+# 3. Install claude CLI
 npm install -g @anthropic-ai/claude-code --prefix ~/.local
 
-# 3. Configure token
+# 4. Configure token
 cd ~/.openclaw/skills/claude-proxy
 cp .env.example .env
-nano .env  # set CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat...
+# edit .env  # set CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat...
 
 # 4. Start
 cd ~/.openclaw/skills/claude-proxy
