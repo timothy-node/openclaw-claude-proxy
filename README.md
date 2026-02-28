@@ -1,5 +1,7 @@
 # claude-proxy
 
+> ⚠️ **Use at your own risk.** This project is provided as-is, without warranty of any kind. The author is not responsible for any damage, data loss, or security issues arising from its use.
+
 Forwards messages from OpenClaw to the local `claude` CLI (`--print` mode) via HTTP.
 
 ```
