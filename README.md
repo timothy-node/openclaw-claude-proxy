@@ -39,7 +39,7 @@ cp .env.example .env
 # CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat...
 
 # Default timeout in seconds for claude CLI calls
-CLAUDE_TIMEOUT_DEFAULT=20
+CLAUDE_TIMEOUT_DEFAULT=120
 ```
 
 ```bash
@@ -60,7 +60,7 @@ cd ~/.openclaw/skills/claude-proxy
 CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat...
 
 # Default timeout in seconds for claude CLI calls
-CLAUDE_TIMEOUT_DEFAULT=20
+CLAUDE_TIMEOUT_DEFAULT=120
 ```
 
 > `.env` is listed in `.gitignore` and will not be committed.
