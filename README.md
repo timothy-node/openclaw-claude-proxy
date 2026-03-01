@@ -5,7 +5,7 @@
 ## 🤝 Community
   
 - 💬 Telegram: https://t.me/timothy_node
-
+- 💬 Youtube : https://youtu.be/arIWurmMKMg
 
 Forwards messages from OpenClaw to the local `claude` CLI (`--print` mode) via HTTP.
 
