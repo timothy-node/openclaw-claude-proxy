@@ -35,7 +35,8 @@ npm install -g @anthropic-ai/claude-code --prefix ~/.local
 # 4. Configure token
 cd ~/.openclaw/skills/claude-proxy
 cp .env.example .env
-# edit .env  # set CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat...
+# Put your token in: ~/.openclaw/skills/claude-proxy/.env
+# CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat...
 ```
 
 ```bash
