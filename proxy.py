@@ -89,7 +89,7 @@ async def chat(req: ChatRequest):
     import asyncio
     loop = asyncio.get_event_loop()
     try:
-        response = await loop.run_in_executor(None, run_claude, req.message, req.timeout)
+        response = await loop.run_in_executor(None, run_claude, req.message, CLAUDE_TIMEOUT_DEFAULT)
         return {"session_id": req.session_id, "response": response}
     except TimeoutError as e:
         raise HTTPException(status_code=504, detail=str(e))

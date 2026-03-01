@@ -24,7 +24,6 @@ def chat(message: str, session_id: str = "cli-test") -> str:
     payload = json.dumps({
         "session_id": session_id,
         "message": message,
-        "timeout": TIMEOUT,
     }).encode()
 
     req = urllib.request.Request(
