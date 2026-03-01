@@ -4,7 +4,7 @@ claude-proxy — Print-mode Proxy
 Forwards messages from OpenClaw to the local claude CLI (--print mode) and returns the response.
 
 HTTP API:
-  POST /chat    { "session_id": "...", "message": "...", "timeout": 120 }
+  POST /chat    { "session_id": "...", "message": "...", "timeout": 20 }
   GET  /health  Health check
 """
 
@@ -17,6 +17,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv(Path(__file__).parent / ".env")
+
+CLAUDE_TIMEOUT_DEFAULT = float(os.getenv("CLAUDE_TIMEOUT_DEFAULT", "20"))
 
 import uvicorn
 from contextlib import asynccontextmanager
@@ -72,7 +74,7 @@ app = FastAPI(title="claude-proxy", version="3.0.0", lifespan=lifespan)
 class ChatRequest(BaseModel):
     session_id: str = "default"
     message: str
-    timeout: float = 120.0
+    timeout: float = CLAUDE_TIMEOUT_DEFAULT
 
 
 @app.get("/health")

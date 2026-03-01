@@ -26,7 +26,7 @@ Content-Type: application/json
 {
   "session_id": "<channel>:<chat_id>",
   "message": "<user message>",
-  "timeout": 120
+  "timeout": $CLAUDE_TIMEOUT_DEFAULT
 }
 ```
 
@@ -37,5 +37,5 @@ Return `response.response` to the user.
 | Case | Action |
 |------|--------|
 | Proxy not running | Respond directly via model |
-| HTTP 504 timeout | Inform user of timeout |
+| HTTP 504 timeout | Inform user of timeout (increase `CLAUDE_TIMEOUT_DEFAULT` in .env if needed) |
 | HTTP 500 | Inform user of error details |

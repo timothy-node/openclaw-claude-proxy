@@ -37,6 +37,9 @@ cd ~/.openclaw/skills/claude-proxy
 cp .env.example .env
 # Put your token in: ~/.openclaw/skills/claude-proxy/.env
 # CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat...
+
+# Default timeout in seconds for claude CLI calls
+CLAUDE_TIMEOUT_DEFAULT=20
 ```
 
 ```bash
@@ -55,6 +58,9 @@ cd ~/.openclaw/skills/claude-proxy
 
 ```
 CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat...
+
+# Default timeout in seconds for claude CLI calls
+CLAUDE_TIMEOUT_DEFAULT=20
 ```
 
 > `.env` is listed in `.gitignore` and will not be committed.
@@ -71,7 +77,7 @@ CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat...
 ```json
 {
   "message": "hello",
-  "timeout": 120
+  "timeout": $CLAUDE_TIMEOUT_DEFAULT
 }
 ```
 
